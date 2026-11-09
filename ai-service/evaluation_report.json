@@ -1,0 +1,83 @@
+{
+  "metrics_comparison": [
+    {
+      "Chỉ số (Metric)": "Accuracy",
+      "Baseline": "0.9220",
+      "Tối ưu (Optimized)": "0.9250",
+      "Mức cải thiện": "+0.30%"
+    },
+    {
+      "Chỉ số (Metric)": "Precision",
+      "Baseline": "0.9322",
+      "Tối ưu (Optimized)": "0.9326",
+      "Mức cải thiện": "+0.04%"
+    },
+    {
+      "Chỉ số (Metric)": "Recall",
+      "Baseline": "0.9053",
+      "Tối ưu (Optimized)": "0.9115",
+      "Mức cải thiện": "+0.62%"
+    },
+    {
+      "Chỉ số (Metric)": "F1-Score",
+      "Baseline": "0.9186",
+      "Tối ưu (Optimized)": "0.9220",
+      "Mức cải thiện": "+0.34%"
+    },
+    {
+      "Chỉ số (Metric)": "ROC-AUC",
+      "Baseline": "0.9828",
+      "Tối ưu (Optimized)": "0.9842",
+      "Mức cải thiện": "+0.13%"
+    }
+  ],
+  "feature_importance": [
+    {
+      "Feature": "accuracy_per_second",
+      "Importance": 0.27358737239280595
+    },
+    {
+      "Feature": "difficulty_challenge",
+      "Importance": 0.23939071693840153
+    },
+    {
+      "Feature": "confidence_index",
+      "Importance": 0.12691373395203917
+    },
+    {
+      "Feature": "avg_response_time_ms",
+      "Importance": 0.12598023788226514
+    },
+    {
+      "Feature": "difficulty_level",
+      "Importance": 0.070723509628574
+    },
+    {
+      "Feature": "recent_accuracy",
+      "Importance": 0.06279395797829308
+    },
+    {
+      "Feature": "consecutive_correct",
+      "Importance": 0.053604845084875105
+    },
+    {
+      "Feature": "retention_momentum",
+      "Importance": 0.0187029020339761
+    },
+    {
+      "Feature": "review_count",
+      "Importance": 0.01622878236190402
+    },
+    {
+      "Feature": "streak",
+      "Importance": 0.01207394174686587
+    }
+  ],
+  "best_params": {
+    "max_depth": 14,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 5,
+    "n_estimators": 150
+  }
+}

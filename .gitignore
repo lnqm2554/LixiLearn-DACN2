@@ -1,0 +1,33 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Local academic proposal contains personal contact information
+De_cuong_DACN2.docx
+
+# Generated Python files
+**/__pycache__/
+*.py[cod]
+
+# JavaScript dependencies and generated output
+node_modules/
+**/node_modules/
+.expo/
+**/.expo/
+dist/
+**/dist/
+web-build/
+**/web-build/
+*.tsbuildinfo
+
+# Local editor / agent configuration
+.vscode/
+**/.claude/
+
+# OS files
+.DS_Store
+Thumbs.db

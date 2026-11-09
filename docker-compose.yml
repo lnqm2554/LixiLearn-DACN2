@@ -1,0 +1,32 @@
+services:
+  # 1. AI Service (Python FastAPI + Scikit-Learn Random Forest)
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: lixilearn-ai-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-service:/app
+    environment:
+      - ENV=development
+    restart: unless-stopped
+
+  # 2. React Native Web Development Environment (Tùy chọn chạy dev trong container)
+  mobile-web:
+    build:
+      context: ./mobile
+      dockerfile: Dockerfile
+    container_name: lixilearn-mobile-web
+    ports:
+      - "8081:8081"
+      - "19000:19000"
+      - "19006:19006"
+    volumes:
+      - ./mobile:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+
