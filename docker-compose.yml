@@ -11,7 +11,18 @@ services:
       - ./ai-service:/app
     environment:
       - ENV=development
+      - CORS_ORIGINS=${AI_ALLOWED_ORIGINS:-*}
     restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=3)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   # 2. React Native Web Development Environment (Tùy chọn chạy dev trong container)
   mobile-web:
@@ -28,5 +39,6 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - EXPO_PUBLIC_AI_SERVICE_URL=${EXPO_PUBLIC_AI_SERVICE_URL:-http://localhost:8000}
     restart: unless-stopped
 

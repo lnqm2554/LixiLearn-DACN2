@@ -1,5 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeScreen from '../screens/HomeScreen';
 import StudyScreen from '../screens/StudyScreen';
 import SpeakingScreen from '../screens/SpeakingScreen';
@@ -7,10 +9,15 @@ import LeaderboardScreen from '../screens/LeaderboardScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { Sparkles, BookHeart, Mic, Trophy, Heart } from 'lucide-react-native';
 import { theme } from '../constants/theme';
+import { getTabBarLayout } from '../utils/tabBarLayout';
 
 const Tab = createBottomTabNavigator();
 
 export default function RootNavigator() {
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const tabBarLayout = getTabBarLayout(width, insets.bottom);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -29,12 +36,13 @@ export default function RootNavigator() {
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarShowLabel: tabBarLayout.showLabels,
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopWidth: 1,
           borderTopColor: theme.colors.border,
-          height: 64,
-          paddingBottom: 10,
+          height: tabBarLayout.height,
+          paddingBottom: tabBarLayout.paddingBottom,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
@@ -49,6 +57,7 @@ export default function RootNavigator() {
         options={{
           title: 'Khởi đầu',
           headerTitle: 'LixiLearn ☕',
+          tabBarAccessibilityLabel: 'Trang chủ',
           tabBarIcon: ({ color, size }) => <Sparkles color={color} size={size - 2} />,
         }}
       />
@@ -58,6 +67,7 @@ export default function RootNavigator() {
         options={{
           title: 'Góc học',
           headerTitle: 'Thong thả ghi nhớ (SRS)',
+          tabBarAccessibilityLabel: 'Góc học từ vựng',
           tabBarIcon: ({ color, size }) => <BookHeart color={color} size={size - 2} />,
         }}
       />
@@ -67,6 +77,7 @@ export default function RootNavigator() {
         options={{
           title: 'Luyện nói',
           headerTitle: 'Luyện nói & nhận dạng từ 🎙️',
+          tabBarAccessibilityLabel: 'Luyện nói',
           tabBarIcon: ({ color, size }) => <Mic color={color} size={size - 2} />,
         }}
       />
@@ -76,6 +87,7 @@ export default function RootNavigator() {
         options={{
           title: 'Bảng vàng',
           headerTitle: 'Thi đua Lớp 23SE5 🏆',
+          tabBarAccessibilityLabel: 'Bảng xếp hạng',
           tabBarIcon: ({ color, size }) => <Trophy color={color} size={size - 2} />,
         }}
       />
@@ -85,6 +97,7 @@ export default function RootNavigator() {
         options={{
           title: 'Góc riêng',
           headerTitle: 'Bước tiến của bạn',
+          tabBarAccessibilityLabel: 'Hồ sơ cá nhân',
           tabBarIcon: ({ color, size }) => <Heart color={color} size={size - 2} />,
         }}
       />

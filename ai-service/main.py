@@ -13,11 +13,16 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# Kích hoạt CORS để Web / Mobile App gọi API không bị chặn
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", "*").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials="*" not in cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -31,11 +36,12 @@ def load_ai_model():
     if os.path.exists(MODEL_PATH):
         try:
             pipeline_bundle = joblib.load(MODEL_PATH)
-            print("🌲 Model Random Forest (Optimized) đã được nạp thành công vào bộ nhớ!")
+            print("Random Forest model loaded.")
         except Exception as e:
-            print(f"⚠️ Lỗi khi nạp model: {e}")
+            error_message = str(e).encode("ascii", "backslashreplace").decode("ascii")
+            print(f"Model loading failed; using heuristic fallback: {error_message}")
     else:
-        print("⚠️ Chưa tìm thấy file model.pkl, API sẽ dùng fallback heuristic.")
+        print("Model file not found; using heuristic fallback.")
 
 @app.on_event("startup")
 def startup_event():

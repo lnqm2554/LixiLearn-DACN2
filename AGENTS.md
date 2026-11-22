@@ -72,6 +72,8 @@ DACN2_Project/
 ├── AGENTS.md                    # Tài liệu định hướng và ngữ cảnh dành cho AI Agents (File này)
 ├── README.md                    # Hướng dẫn chạy và sử dụng cho con người
 ├── docker-compose.yml           # Khai báo dịch vụ Docker (ai-service, mobile-web)
+├── docker-compose.prod.yml      # Compose production cho AI service
+├── .github/workflows/ci.yml     # Kiểm thử mobile và AI service trên GitHub Actions
 ├── De_cuong_DACN2.docx          # Bản word đề cương chính thức nộp khoa
 ├── ai-service/                  # Dịch vụ Python AI Microservice
 │   ├── Dockerfile               # Python 3.11-slim container build
@@ -89,7 +91,9 @@ DACN2_Project/
 │       ├── screens/             # Màn hình ứng dụng (Home, Learn, Review, Profile,...)
 │       ├── services/            # Axios API client gọi AI service
 │       ├── navigation/          # React Navigation Stacks & Tabs
+│       ├── utils/tabBarLayout.ts # Layout tab bar theo safe-area/viewport
 │       └── hooks/               # Custom React hooks
+│   └── tests/                   # Kiểm thử SM-2, store, AI và UI layout
 └── server/src/                  # Chưa có triển khai backend (Firebase/Node.js)
 ```
 
@@ -130,6 +134,9 @@ DACN2_Project/
 14. Luyện nói dùng native/web speech recognition thật; XP chỉ thưởng khi transcript thật đạt ngưỡng. Phần chấm hiện so khớp văn bản, chưa phân tích âm vị.
 15. Streak tăng tối đa một lần mỗi ngày. Bảng xếp hạng tuần/toàn thời gian khác nhau; dữ liệu người học khác vẫn là mẫu.
 16. Đã thêm kiểm thử cho SM-2, store persistence, AI client/API validation, transcript matching, weekly XP và daily streak.
+17. Tab bar dùng safe-area inset, nhãn rút gọn ở màn hình hẹp, có accessibility labels và kiểm thử layout; xác minh web ở viewport 320px. Thiết bị thật vẫn cần kiểm tra thủ công.
+18. Compose phát triển có healthcheck và CORS qua môi trường; `docker-compose.prod.yml` chạy AI API không bật reload, read-only, bỏ capabilities và yêu cầu allowlist CORS.
+19. GitHub Actions kiểm tra mobile và AI service; phiên bản Expo được đồng bộ với SDK. `minimatch` của Expo Fingerprint được override sang bản đã vá bảo mật.
 
 ---
 
@@ -176,7 +183,7 @@ Khi nhận tiếp công việc từ người dùng, Agent hãy ưu tiên thực 
 3. **AI thực nghiệm:** thay hoặc bổ sung dataset mô phỏng bằng dữ liệu benchmark/ẩn danh có nguồn gốc; đánh giá mô hình trên tập độc lập trước khi dùng metric như kết quả thực tế.
 4. **Đánh giá phát âm:** transcript matching hiện không đánh giá âm vị; cần mô hình/dịch vụ pronunciation assessment nếu đề tài yêu cầu phân tích phát âm ở mức âm thanh.
 5. **Native release:** tạo development/release build và xác minh quyền mic, speech service, lưu trữ trên thiết bị thật Android/iOS. Không thể xác minh luồng native chỉ bằng web export.
-6. **Hoàn thiện vận hành:** cấu hình môi trường production, logging/monitoring, chính sách CORS và hướng dẫn phát hành.
+6. **Hoàn thiện vận hành:** cấu hình hạ tầng production thật, HTTPS/reverse proxy, logging/monitoring và quy trình phát hành.
 
 ---
 

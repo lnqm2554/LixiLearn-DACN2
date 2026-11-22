@@ -5,6 +5,7 @@ LixiLearn là ứng dụng học tiếng Anh đa nền tảng cho đồ án DACN
 ## Yêu cầu
 
 - Node.js tương thích với Expo SDK 58
+- Python 3.11 nếu chạy AI tests hoặc huấn luyện model trực tiếp ngoài Docker
 - Docker Desktop để chạy AI service
 - Thiết bị hoặc máy ảo Android/iOS để kiểm tra nhận dạng giọng nói native
 
@@ -14,10 +15,23 @@ Từ thư mục gốc:
 
 ```powershell
 docker compose up -d ai-service
+docker compose ps
 docker compose logs -f ai-service
 ```
 
-Service mặc định chạy tại `http://localhost:8000`; tài liệu OpenAPI ở `/docs`. Model, dataset và báo cáo huấn luyện nằm trong `ai-service/`.
+AI service mặc định chạy tại `http://localhost:8000`; trạng thái container hiển thị `healthy` khi endpoint gốc phản hồi. Tài liệu OpenAPI ở `/docs`. Model, dataset và báo cáo huấn luyện nằm trong `ai-service/`.
+
+### Cấu hình triển khai AI service
+
+Compose mặc định dành cho phát triển: bật `--reload`, mount source code và cho phép CORS wildcard (không cho phép credentials). Khi triển khai AI service độc lập, chỉ định chính xác origin của web app; không dùng wildcard:
+
+```powershell
+$env:AI_ALLOWED_ORIGINS = "https://app.example.com"
+docker compose -f docker-compose.prod.yml up --build -d
+docker compose -f docker-compose.prod.yml ps
+```
+
+Compose triển khai không mount source và không bật `--reload`; container chạy read-only, bỏ Linux capabilities và chặn privilege escalation. `AI_ALLOWED_ORIGINS` là cấu hình bắt buộc. HTTPS, reverse proxy, domain, secrets và nơi triển khai vẫn cần được cấu hình theo hạ tầng thực tế.
 
 ## Khởi chạy ứng dụng mobile
 
@@ -47,18 +61,34 @@ npx expo run:ios
 
 Nhận dạng phụ thuộc quyền thiết bị và dịch vụ speech recognition có sẵn trên nền tảng. Điểm hiện tại so khớp văn bản nhận dạng với từ mục tiêu, chưa phân tích âm vị từ tín hiệu âm thanh.
 
-## Kiểm tra
+## Kiểm tra tự động
 
-Chạy tại `mobile/`:
+GitHub Actions chạy mobile tests, TypeScript, web export và AI service unit tests trên mỗi push/pull request. Có thể chạy cục bộ:
 
 ```powershell
+cd mobile
+npm ci
 npm test
 npx tsc --noEmit
 npx expo export --platform web
-docker exec lixilearn-ai-service python -m unittest discover -s /app/tests -v
+cd ..\ai-service
+python -m unittest discover -s tests -v
 ```
 
-The final command runs the AI service's built-in unit tests in the running container.
+## Các bước cần phối hợp thủ công
+
+### Firebase (chưa tích hợp vào ứng dụng)
+
+Khi sẵn sàng làm Auth/Firestore, bạn cần tạo Firebase project, chọn region của Firestore, bật phương thức đăng nhập muốn dùng và đăng ký ứng dụng. Trước khi kết nối, cần chốt schema người dùng/tiến độ, quy tắc bảo mật và cách phân quyền leaderboard. Firebase client config không phải service-account secret; **không gửi service-account JSON hay private key**. Hiện source chưa dùng Firebase nên chưa cần thêm credentials vào repo.
+
+### Kiểm thử Android thật
+
+1. Cài Android Studio/Android SDK và driver thiết bị; bật USB debugging hoặc dùng emulator.
+2. Khởi chạy AI service; với điện thoại thật, đặt `EXPO_PUBLIC_AI_SERVICE_URL` trong `mobile/.env.local` thành IP LAN của máy phát triển (không dùng `localhost`), ví dụ `http://192.168.1.20:8000`. Cho phép kết nối cổng này trên mạng riêng nếu firewall chặn.
+3. Từ `mobile/`, tạo/chạy development build bằng `npx expo run:android --device`; cấp quyền microphone và thử các màn hình, lưu tiến độ và nhận dạng giọng nói.
+
+Expo Go không chứa native speech-recognition module. iOS native build cần macOS và Xcode; môi trường Windows hiện tại chỉ tự kiểm tra được web/Android. Nhận dạng còn phụ thuộc dịch vụ ngôn ngữ có trên thiết bị; điểm hiện tại chỉ so khớp transcript, chưa chấm âm vị.
+
 Tiến độ học được lưu cục bộ bằng AsyncStorage. Dữ liệu học viên khác trên bảng xếp hạng chỉ là minh họa, chưa đồng bộ server. Firebase Auth/Firestore và leaderboard production chưa được cấu hình. Random Forest hiện huấn luyện trên dữ liệu mô phỏng; các metric không đại diện cho hiệu năng trên người học thật.
 
 ## Cấu trúc hiện tại
